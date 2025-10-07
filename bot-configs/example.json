@@ -1,0 +1,88 @@
+{
+  "monitor_groups": [
+    -1001234567890,
+    -1001234567891
+  ],
+  "monitor_keywords": [
+    "palavra1",
+    "palavra2",
+    "termo importante"
+  ],
+  "delete_keywords": [
+    "spam",
+    "promoção",
+    "venda",
+    "compre agora"
+  ],
+  "delete_patterns": [
+    "https?://[^\\s]+",
+    "\\b\\d{10,}\\b"
+  ],
+  "response_messages": {
+    "-1001234567890": [
+      "Obrigado pela mensagem!",
+      "Entendi, vou verificar isso.",
+      "Perfeito, anotado!"
+    ],
+    "-1001234567891": [
+      "Resposta automática para este grupo"
+    ]
+  },
+  "auto_responses": [
+    {
+      "keywords": ["oi", "olá", "bom dia"],
+      "responses": [
+        "Olá! Como posso ajudar?",
+        "Bom dia! Em que posso auxiliar?",
+        "Oi! Tudo bem?"
+      ]
+    },
+    {
+      "keywords": ["ajuda", "help", "suporte"],
+      "responses": [
+        "Claro! Como posso ajudar?",
+        "Estou aqui para auxiliar!",
+        "O que você precisa?"
+      ]
+    }
+  ],
+  "schedule_messages": [
+    {
+      "chat_id": -1001234567890,
+      "text": "Bom dia! Lembrete diário.",
+      "time": "09:00",
+      "active": true
+    },
+    {
+      "chat_id": -1001234567890,
+      "text": "Boa tarde! Atualização do dia.",
+      "time": "15:00",
+      "active": true
+    },
+    {
+      "chat_id": -1001234567891,
+      "text": "Mensagem a cada 2 horas",
+      "interval_minutes": 120,
+      "active": true
+    }
+  ],
+  "comment_templates": [
+    "Interessante!",
+    "Concordo!",
+    "Boa informação!",
+    "Obrigado por compartilhar!"
+  ],
+  "protected_users": [
+    123456789,
+    987654321
+  ],
+  "filters": {
+    "min_message_length": 1,
+    "max_message_length": 4096,
+    "allowed_languages": ["pt", "en"],
+    "max_messages_per_hour": 50
+  },
+  "alert_threshold": 5,
+  "response_delay_seconds": 2,
+  "max_message_age_hours": 24
+}

@@ -1,0 +1,51 @@
+{
+  "name": "telegram-bots-manager",
+  "version": "1.0.0",
+  "description": "Sistema completo para gerenciar múltiplos bots do Telegram com interface web moderna",
+  "main": "index.js",
+  "scripts": {
+    "install": "./install.sh",
+    "build": "./scripts/build-images.sh",
+    "release": "./scripts/build-images.sh latest telegrambots push",
+    "test": "docker-compose -f docker-compose.test.yml up --abort-on-container-exit",
+    "docs": "mkdocs serve",
+    "lint": "docker run --rm -v $(pwd):/app -w /app python:3.11-slim python -m flake8 bot-manager/",
+    "format": "docker run --rm -v $(pwd):/app -w /app python:3.11-slim python -m black bot-manager/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seu-usuario/telegram-bots-manager.git"
+  },
+  "keywords": [
+    "telegram",
+    "bots",
+    "manager",
+    "docker",
+    "web-interface",
+    "automation",
+    "telethon",
+    "python",
+    "fastapi"
+  ],
+  "author": "Seu Nome <seu@email.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/seu-usuario/telegram-bots-manager/issues"
+  },
+  "homepage": "https://github.com/seu-usuario/telegram-bots-manager#readme",
+  "engines": {
+    "docker": ">=20.0.0",
+    "docker-compose": ">=2.0.0"
+  },
+  "files": [
+    "docker-compose.yml",
+    "docker-stacks/",
+    "bot-manager/",
+    "bot-monitor/",
+    "bot-templates/",
+    "docs/",
+    "scripts/",
+    "install.sh",
+    "README.md"
+  ]
+}
