@@ -148,7 +148,7 @@ install_swarm() {
     print_status "Instalando no Docker Swarm..."
     
     # Baixar stack
-    curl -o telegram-bots-stack.yml https://raw.githubusercontent.com/SEU-USERNAME/telegram-bots-manager/main/docker-stacks/telegram-bots-manager.yml
+    curl -o telegram-bots-stack.yml https://raw.githubusercontent.com/SKageyoshi/telegram-bots-manager/main/docker-stacks/telegram-bots-manager.yml
     
     # Deploy da stack
     docker stack deploy -c telegram-bots-stack.yml telegram-bots
@@ -168,7 +168,7 @@ install_portainer() {
     echo "4. Configure as variáveis de ambiente"
     echo "5. Deploy da stack"
     echo ""
-    print_status "URL da stack: https://raw.githubusercontent.com/SEU-USERNAME/telegram-bots-manager/main/docker-stacks/telegram-bots-manager.yml"
+    print_status "URL da stack: https://raw.githubusercontent.com/SKageyoshi/telegram-bots-manager/main/docker-stacks/telegram-bots-manager.yml"
 }
 
 # Instalar com Docker Compose
@@ -176,7 +176,7 @@ install_compose() {
     print_status "Instalando com Docker Compose..."
     
     # Baixar docker-compose.yml
-    curl -o docker-compose.yml https://raw.githubusercontent.com/SEU-USERNAME/telegram-bots-manager/main/docker-compose.yml
+    curl -o docker-compose.yml https://raw.githubusercontent.com/SKageyoshi/telegram-bots-manager/main/docker-compose.yml
     
     # Iniciar serviços
     docker-compose up -d

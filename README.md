@@ -54,7 +54,7 @@ Este projeto permite:
 ### 🎯 Instalação em 1 Comando
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/SEU-USERNAME/telegram-bots-manager/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/SKageyoshi/telegram-bots-manager/main/install.sh | bash
 ```
 
 ### 📦 Outras Formas de Instalação
