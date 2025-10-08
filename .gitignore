@@ -1,35 +1,29 @@
-# Arquivos de ambiente
-.env
-.env.local
-.env.production
-
-# Logs
-*.log
-bot-logs/
-logs/
-
-# Sessões do Telegram
-bot-sessions/
-sessions/
-
-# Arquivos temporários
-*.tmp
-*.temp
-.DS_Store
-Thumbs.db
-
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-env/
-venv/
-ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Docker
-.dockerignore
+# Virtual environments
+venv/
+env/
+ENV/
 
 # IDE
 .vscode/
@@ -37,9 +31,28 @@ ENV/
 *.swp
 *.swo
 
-# Exports
-bot-exports/
-exports/
+# OS
+.DS_Store
+Thumbs.db
 
-# Configurações locais
-config.local.json
+# Gradle
+.gradle/
+build/
+gradle-app.setting
+!gradle-wrapper.jar
+
+# Android
+*.iml
+.gradle
+local.properties
+.idea/
+*.hprof
+.cxx/
+*.keystore
+!debug.keystore
+
+# Logs
+*.log
+
+# Cache
+.cache/

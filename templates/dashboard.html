@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="/static/css/telegram-style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fab fa-telegram-plane"></i>
+                    <span>Telegram Bots Manager</span>
+                </div>
+                <div class="header-actions">
+                    <div class="status-indicator online">
+                        <div class="status-dot"></div>
+                        <span>Online</span>
+                    </div>
+                    <div class="version">v{{ version }}</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-robot"></i>
+                    <span>Meus Bots</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Criar Bot</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Estatísticas</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Configurações</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1>Dashboard</h1>
+                <p>Gerencie seus bots do Telegram de forma inteligente</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="total-bots">0</h3>
+                        <p>Total de Bots</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon active">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="active-bots">0</h3>
+                        <p>Bots Ativos</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="total-messages">0</h3>
+                        <p>Mensagens</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="uptime">99.9%</h3>
+                        <p>Uptime</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <h2>Ações Rápidas</h2>
+                <div class="actions-grid">
+                    <button class="action-btn primary">
+                        <i class="fas fa-plus"></i>
+                        <span>Criar Novo Bot</span>
+                    </button>
+                    <button class="action-btn secondary">
+                        <i class="fas fa-upload"></i>
+                        <span>Importar Bot</span>
+                    </button>
+                    <button class="action-btn secondary">
+                        <i class="fas fa-download"></i>
+                        <span>Exportar Config</span>
+                    </button>
+                    <button class="action-btn secondary">
+                        <i class="fas fa-sync"></i>
+                        <span>Sincronizar</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bots List -->
+            <div class="bots-section">
+                <div class="section-header">
+                    <h2>Meus Bots</h2>
+                    <div class="section-actions">
+                        <button class="btn-icon">
+                            <i class="fas fa-filter"></i>
+                        </button>
+                        <button class="btn-icon">
+                            <i class="fas fa-sort"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="bots-list" id="bots-list">
+                    <div class="empty-state">
+                        <i class="fas fa-robot"></i>
+                        <h3>Nenhum bot criado ainda</h3>
+                        <p>Crie seu primeiro bot para começar a gerenciar mensagens automaticamente</p>
+                        <button class="btn-primary">Criar Primeiro Bot</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
