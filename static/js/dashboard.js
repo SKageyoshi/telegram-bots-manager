@@ -98,26 +98,221 @@ function setupEventListeners() {
             }, 150);
         });
     });
+    
+    // Form de criação de bot
+    document.getElementById('createBotForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        createBot();
+    });
+    
+    // Fechar modais ao clicar fora
+    window.addEventListener('click', function(e) {
+        const createModal = document.getElementById('createBotModal');
+        const confirmModal = document.getElementById('confirmModal');
+        
+        if (e.target === createModal) {
+            closeCreateBotModal();
+        }
+        if (e.target === confirmModal) {
+            closeConfirmModal();
+        }
+    });
 }
 
-function createBot() {
-    // Implementar criação de bot
-    console.log('Criar bot clicado');
-    alert('Funcionalidade de criação de bot será implementada em breve!');
+// Modal Functions
+function openCreateBotModal() {
+    document.getElementById('createBotModal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
 }
 
-function editBot(botId) {
-    // Implementar edição de bot
-    console.log('Editar bot:', botId);
-    alert('Funcionalidade de edição será implementada em breve!');
+function closeCreateBotModal() {
+    document.getElementById('createBotModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    document.getElementById('createBotForm').reset();
 }
 
-function deleteBot(botId) {
-    // Implementar exclusão de bot
-    if (confirm('Tem certeza que deseja excluir este bot?')) {
-        console.log('Excluir bot:', botId);
-        alert('Funcionalidade de exclusão será implementada em breve!');
+function openConfirmModal(message, callback) {
+    document.getElementById('confirmMessage').textContent = message;
+    document.getElementById('confirmButton').onclick = callback;
+    document.getElementById('confirmModal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeConfirmModal() {
+    document.getElementById('confirmModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// Bot Management Functions
+async function createBot() {
+    const form = document.getElementById('createBotForm');
+    const formData = new FormData(form);
+    
+    const botData = {
+        name: formData.get('name'),
+        description: formData.get('description'),
+        bot_type: formData.get('bot_type'),
+        token: formData.get('token'),
+        config: {}
+    };
+    
+    try {
+        const response = await fetch('/api/bots', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(botData)
+        });
+        
+        if (response.ok) {
+            const newBot = await response.json();
+            console.log('Bot criado:', newBot);
+            
+            // Fechar modal e recarregar lista
+            closeCreateBotModal();
+            loadBots();
+            loadStats();
+            
+            // Mostrar sucesso
+            showNotification('Bot criado com sucesso!', 'success');
+        } else {
+            const error = await response.json();
+            showNotification(`Erro: ${error.detail}`, 'error');
+        }
+    } catch (error) {
+        console.error('Erro ao criar bot:', error);
+        showNotification('Erro ao criar bot. Tente novamente.', 'error');
     }
+}
+
+async function editBot(botId) {
+    try {
+        const response = await fetch(`/api/bots/${botId}`);
+        if (response.ok) {
+            const bot = await response.json();
+            console.log('Editar bot:', bot);
+            showNotification('Funcionalidade de edição será implementada em breve!', 'info');
+        } else {
+            showNotification('Erro ao carregar dados do bot', 'error');
+        }
+    } catch (error) {
+        console.error('Erro ao carregar bot:', error);
+        showNotification('Erro ao carregar dados do bot', 'error');
+    }
+}
+
+async function deleteBot(botId) {
+    openConfirmModal('Tem certeza que deseja excluir este bot? Esta ação não pode ser desfeita.', async () => {
+        try {
+            const response = await fetch(`/api/bots/${botId}`, {
+                method: 'DELETE'
+            });
+            
+            if (response.ok) {
+                closeConfirmModal();
+                loadBots();
+                loadStats();
+                showNotification('Bot excluído com sucesso!', 'success');
+            } else {
+                const error = await response.json();
+                showNotification(`Erro: ${error.detail}`, 'error');
+            }
+        } catch (error) {
+            console.error('Erro ao excluir bot:', error);
+            showNotification('Erro ao excluir bot. Tente novamente.', 'error');
+        }
+    });
+}
+
+async function startBot(botId) {
+    try {
+        const response = await fetch(`/api/bots/${botId}/start`, {
+            method: 'POST'
+        });
+        
+        if (response.ok) {
+            loadBots();
+            loadStats();
+            showNotification('Bot iniciado com sucesso!', 'success');
+        } else {
+            const error = await response.json();
+            showNotification(`Erro: ${error.detail}`, 'error');
+        }
+    } catch (error) {
+        console.error('Erro ao iniciar bot:', error);
+        showNotification('Erro ao iniciar bot. Tente novamente.', 'error');
+    }
+}
+
+async function stopBot(botId) {
+    try {
+        const response = await fetch(`/api/bots/${botId}/stop`, {
+            method: 'POST'
+        });
+        
+        if (response.ok) {
+            loadBots();
+            loadStats();
+            showNotification('Bot parado com sucesso!', 'success');
+        } else {
+            const error = await response.json();
+            showNotification(`Erro: ${error.detail}`, 'error');
+        }
+    } catch (error) {
+        console.error('Erro ao parar bot:', error);
+        showNotification('Erro ao parar bot. Tente novamente.', 'error');
+    }
+}
+
+// Notification System
+function showNotification(message, type = 'info') {
+    // Criar elemento de notificação
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-${getNotificationIcon(type)}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    // Adicionar ao body
+    document.body.appendChild(notification);
+    
+    // Mostrar notificação
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    // Remover após 5 segundos
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 5000);
+}
+
+function getNotificationIcon(type) {
+    const icons = {
+        'success': 'check-circle',
+        'error': 'exclamation-circle',
+        'warning': 'exclamation-triangle',
+        'info': 'info-circle'
+    };
+    return icons[type] || 'info-circle';
+}
+
+// Utility Functions
+function toggleFilter() {
+    showNotification('Funcionalidade de filtro será implementada em breve!', 'info');
+}
+
+function toggleSort() {
+    showNotification('Funcionalidade de ordenação será implementada em breve!', 'info');
 }
 
 // Animações de entrada
