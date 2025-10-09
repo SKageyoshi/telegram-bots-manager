@@ -72,5 +72,38 @@ class TelegramSession(Base):
     last_used = Column(DateTime(timezone=True), nullable=True)
     is_active = Column(Boolean, default=True)
     
+class User(Base):
+    __tablename__ = "users"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(50), nullable=False, unique=True)
+    email = Column(String(100), nullable=True, unique=True)
+    phone_number = Column(String(20), nullable=True, unique=True)
+    password_hash = Column(String(255), nullable=True)  # Para autenticação local
+    is_active = Column(Boolean, default=True)
+    is_admin = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    last_login = Column(DateTime(timezone=True), nullable=True)
+    
+    # Configurações do usuário
+    preferences = Column(JSON, default={})
+    
     def __repr__(self):
-        return f"<TelegramSession(bot_id={self.bot_id}, phone='{self.phone_number}')>"
+        return f"<User(username='{self.username}', email='{self.email}')>"
+
+class UserTelegramAccount(Base):
+    __tablename__ = "user_telegram_accounts"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, nullable=False)
+    phone_number = Column(String(20), nullable=False)
+    api_id = Column(String(50), nullable=False)
+    api_hash = Column(String(200), nullable=False)
+    session_string = Column(Text, nullable=True)
+    is_authenticated = Column(Boolean, default=False)
+    auth_status = Column(String(20), default="pending")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    last_used = Column(DateTime(timezone=True), nullable=True)
+    
+    def __repr__(self):
+        return f"<UserTelegramAccount(user_id={self.user_id}, phone='{self.phone_number}')>"

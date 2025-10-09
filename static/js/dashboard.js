@@ -109,6 +109,8 @@ function setupEventListeners() {
     window.addEventListener('click', function(e) {
         const createModal = document.getElementById('createBotModal');
         const confirmModal = document.getElementById('confirmModal');
+        const accountsModal = document.getElementById('accountsModal');
+        const addAccountModal = document.getElementById('addAccountModal');
         
         if (e.target === createModal) {
             closeCreateBotModal();
@@ -116,6 +118,18 @@ function setupEventListeners() {
         if (e.target === confirmModal) {
             closeConfirmModal();
         }
+        if (e.target === accountsModal) {
+            closeAccountsModal();
+        }
+        if (e.target === addAccountModal) {
+            closeAddAccountModal();
+        }
+    });
+    
+    // Event listener para formulário de adicionar conta
+    document.getElementById('addAccountForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        addAccount();
     });
 }
 
@@ -141,6 +155,29 @@ function openConfirmModal(message, callback) {
 function closeConfirmModal() {
     document.getElementById('confirmModal').style.display = 'none';
     document.body.style.overflow = 'auto';
+}
+
+// Account Modal Functions
+function openAccountsModal() {
+    document.getElementById('accountsModal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    loadAccounts();
+}
+
+function closeAccountsModal() {
+    document.getElementById('accountsModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+function openAddAccountModal() {
+    document.getElementById('addAccountModal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAddAccountModal() {
+    document.getElementById('addAccountModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    document.getElementById('addAccountForm').reset();
 }
 
 // Bot Management Functions
@@ -307,6 +344,130 @@ function getNotificationIcon(type) {
         'info': 'info-circle'
     };
     return icons[type] || 'info-circle';
+}
+
+// Account Management Functions
+async function loadAccounts() {
+    try {
+        const response = await fetch('/api/accounts');
+        if (response.ok) {
+            const accounts = await response.json();
+            displayAccounts(accounts);
+        } else {
+            console.error('Erro ao carregar contas');
+        }
+    } catch (error) {
+        console.error('Erro ao carregar contas:', error);
+    }
+}
+
+function displayAccounts(accounts) {
+    const accountsList = document.getElementById('accountsList');
+    
+    if (accounts.length === 0) {
+        accountsList.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-user-plus"></i>
+                <h3>Nenhuma conta adicionada</h3>
+                <p>Adicione suas contas do Telegram para gerenciar bots</p>
+            </div>
+        `;
+    } else {
+        accountsList.innerHTML = accounts.map(account => `
+            <div class="account-card">
+                <div class="account-info">
+                    <div class="account-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="account-details">
+                        <h3>${account.phone_number}</h3>
+                        <p>API ID: ${account.api_id}</p>
+                    </div>
+                </div>
+                <div class="account-status ${account.is_authenticated ? 'authenticated' : 'pending'}">
+                    <span>${account.is_authenticated ? 'Autenticado' : 'Pendente'}</span>
+                </div>
+                <div class="account-actions">
+                    <button class="btn-icon" onclick="testAccountConnection(${account.id})">
+                        <i class="fas fa-wifi"></i>
+                    </button>
+                    <button class="btn-icon" onclick="deleteAccount(${account.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+async function addAccount() {
+    const form = document.getElementById('addAccountForm');
+    const formData = new FormData(form);
+    
+    const accountData = {
+        phone_number: formData.get('phone_number'),
+        api_id: formData.get('api_id'),
+        api_hash: formData.get('api_hash')
+    };
+    
+    try {
+        const response = await fetch('/api/accounts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(accountData)
+        });
+        
+        if (response.ok) {
+            const newAccount = await response.json();
+            showNotification('Conta adicionada com sucesso!', 'success');
+            closeAddAccountModal();
+            loadAccounts();
+        } else {
+            const error = await response.json();
+            showNotification(`Erro: ${error.detail}`, 'error');
+        }
+    } catch (error) {
+        console.error('Erro ao adicionar conta:', error);
+        showNotification('Erro ao adicionar conta: ' + error.message, 'error');
+    }
+}
+
+async function testAccountConnection(accountId) {
+    try {
+        const response = await fetch(`/api/accounts/${accountId}/test-connection`);
+        if (response.ok) {
+            const result = await response.json();
+            showNotification(result.message, result.success ? 'success' : 'error');
+        } else {
+            showNotification('Erro ao testar conexão', 'error');
+        }
+    } catch (error) {
+        console.error('Erro ao testar conexão:', error);
+        showNotification('Erro ao testar conexão', 'error');
+    }
+}
+
+async function deleteAccount(accountId) {
+    openConfirmModal('Tem certeza que deseja deletar esta conta?', async () => {
+        try {
+            const response = await fetch(`/api/accounts/${accountId}`, {
+                method: 'DELETE'
+            });
+            
+            if (response.ok) {
+                showNotification('Conta deletada com sucesso!', 'success');
+                loadAccounts();
+            } else {
+                showNotification('Erro ao deletar conta', 'error');
+            }
+        } catch (error) {
+            console.error('Erro ao deletar conta:', error);
+            showNotification('Erro ao deletar conta', 'error');
+        }
+        closeConfirmModal();
+    });
 }
 
 // Utility Functions

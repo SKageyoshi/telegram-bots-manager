@@ -8,7 +8,7 @@ import uvicorn
 
 # Importar módulos locais
 from database import get_db, init_database
-from models import Bot, BotLog, BotStats, TelegramSession
+from models import Bot, BotLog, BotStats, TelegramSession, User, UserTelegramAccount
 from schemas import BotCreate, BotUpdate, BotResponse, BotList, BotStats as BotStatsSchema
 from telegram_service import get_telegram_service
 
@@ -208,6 +208,72 @@ async def test_bot_connection(bot_id: int, db: Session = Depends(get_db)):
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao testar conexão: {str(e)}")
+
+# APIs DE CONTAS TELEGRAM
+
+@app.get("/api/accounts")
+def get_accounts(db: Session = Depends(get_db)):
+    """Obter lista de contas Telegram"""
+    accounts = db.query(UserTelegramAccount).all()
+    return accounts
+
+@app.post("/api/accounts")
+def create_account(account_data: dict, db: Session = Depends(get_db)):
+    """Criar nova conta Telegram"""
+    phone_number = account_data.get('phone_number')
+    api_id = account_data.get('api_id')
+    api_hash = account_data.get('api_hash')
+    
+    if not phone_number or not api_id or not api_hash:
+        raise HTTPException(status_code=400, detail="phone_number, api_id e api_hash são obrigatórios")
+    
+    # Verificar se já existe conta com mesmo número
+    existing_account = db.query(UserTelegramAccount).filter(
+        UserTelegramAccount.phone_number == phone_number
+    ).first()
+    
+    if existing_account:
+        raise HTTPException(status_code=400, detail="Já existe uma conta com este número")
+    
+    # Criar nova conta
+    db_account = UserTelegramAccount(
+        user_id=1,  # Por enquanto, usuário padrão
+        phone_number=phone_number,
+        api_id=api_id,
+        api_hash=api_hash
+    )
+    
+    db.add(db_account)
+    db.commit()
+    db.refresh(db_account)
+    
+    return db_account
+
+@app.get("/api/accounts/{account_id}/test-connection")
+async def test_account_connection(account_id: int, db: Session = Depends(get_db)):
+    """Testar conexão da conta"""
+    account = db.query(UserTelegramAccount).filter(UserTelegramAccount.id == account_id).first()
+    if not account:
+        raise HTTPException(status_code=404, detail="Conta não encontrada")
+    
+    try:
+        telegram_service = get_telegram_service()
+        result = await telegram_service.test_connection(account)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao testar conexão: {str(e)}")
+
+@app.delete("/api/accounts/{account_id}")
+def delete_account(account_id: int, db: Session = Depends(get_db)):
+    """Deletar conta"""
+    account = db.query(UserTelegramAccount).filter(UserTelegramAccount.id == account_id).first()
+    if not account:
+        raise HTTPException(status_code=404, detail="Conta não encontrada")
+    
+    db.delete(account)
+    db.commit()
+    
+    return {"message": "Conta deletada com sucesso"}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

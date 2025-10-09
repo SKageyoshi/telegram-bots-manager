@@ -46,6 +46,10 @@
                     <i class="fas fa-chart-line"></i>
                     <span>Estatísticas</span>
                 </a>
+                <a href="#" class="nav-item" onclick="openAccountsModal()">
+                    <i class="fas fa-users"></i>
+                    <span>Minhas Contas</span>
+                </a>
                 <a href="#" class="nav-item">
                     <i class="fas fa-cog"></i>
                     <span>Configurações</span>
@@ -235,6 +239,71 @@
     </div>
         </main>
     </div>
+
+<!-- Modal de Contas -->
+<div id="accountsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Minhas Contas Telegram</h2>
+            <button class="close-btn" onclick="closeAccountsModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="accounts-actions">
+                <button class="btn-primary" onclick="openAddAccountModal()">
+                    <i class="fas fa-plus"></i>
+                    Adicionar Conta
+                </button>
+            </div>
+            
+            <div class="accounts-list" id="accountsList">
+                <div class="empty-state">
+                    <i class="fas fa-user-plus"></i>
+                    <h3>Nenhuma conta adicionada</h3>
+                    <p>Adicione suas contas do Telegram para gerenciar bots</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Adicionar Conta -->
+<div id="addAccountModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Adicionar Conta Telegram</h2>
+            <button class="close-btn" onclick="closeAddAccountModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="addAccountForm">
+                <div class="form-group">
+                    <label for="accountPhone">Número de Telefone *</label>
+                    <input type="tel" id="accountPhone" name="phone_number" required placeholder="+5511999999999">
+                    <small>Número com código do país (ex: +5511999999999)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="accountApiId">API ID *</label>
+                    <input type="text" id="accountApiId" name="api_id" required placeholder="12345678">
+                    <small>Obtenha em https://my.telegram.org/apps</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="accountApiHash">API Hash *</label>
+                    <input type="text" id="accountApiHash" name="api_hash" required placeholder="abcdef1234567890abcdef1234567890">
+                    <small>Obtenha em https://my.telegram.org/apps</small>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeAddAccountModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-plus"></i>
+                        Adicionar Conta
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
     <script src="/static/js/dashboard.js"></script>
 </body>

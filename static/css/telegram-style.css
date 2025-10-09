@@ -134,6 +134,10 @@ body {
     border-right: 1px solid var(--tg-border);
     padding: 1.5rem 0;
     overflow-y: auto;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
 }
 
 .nav-menu {
@@ -391,6 +395,82 @@ body {
     transform: translateY(-2px);
 }
 
+/* Account Cards */
+.account-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: var(--tg-bg-primary);
+    border: 1px solid var(--tg-border);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    transition: var(--tg-transition);
+}
+
+.account-card:hover {
+    box-shadow: var(--tg-shadow-hover);
+    transform: translateY(-2px);
+}
+
+.account-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.account-avatar {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--tg-primary), var(--tg-secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.account-details h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--tg-text-primary);
+}
+
+.account-details p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--tg-text-secondary);
+}
+
+.account-status {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.account-status.authenticated {
+    background: var(--tg-success);
+    color: white;
+}
+
+.account-status.pending {
+    background: var(--tg-warning);
+    color: white;
+}
+
+.account-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.accounts-actions {
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .sidebar {
@@ -410,6 +490,25 @@ body {
     .actions-grid {
         grid-template-columns: 1fr;
     }
+    
+    .modal-content {
+        margin: 1% auto;
+        width: 95%;
+        max-height: 95vh;
+    }
+    
+    .modal-body {
+        max-height: calc(95vh - 120px);
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .form-actions button {
+        width: 100%;
+    }
 }
 
 /* Modal Styles */
@@ -426,14 +525,18 @@ body {
 }
 
 .modal-content {
-    background-color: var(--bg-primary);
-    margin: 5% auto;
+    background-color: var(--tg-bg-primary);
+    margin: 2% auto;
     padding: 0;
     border-radius: 12px;
     width: 90%;
     max-width: 500px;
+    max-height: 90vh;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     animation: modalSlideIn 0.3s ease-out;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .modal-content.small {
@@ -479,6 +582,28 @@ body {
 
 .modal-body {
     padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+    max-height: calc(90vh - 120px);
+}
+
+/* Scrollbar personalizada para modais */
+.modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: var(--tg-bg-secondary);
+    border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: var(--tg-primary);
+    border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: var(--tg-primary-dark);
 }
 
 .form-group {
@@ -531,7 +656,11 @@ body {
     justify-content: flex-end;
     margin-top: 2rem;
     padding-top: 1rem;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--tg-border);
+    background: var(--tg-bg-primary);
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
 }
 
 .btn-secondary {
