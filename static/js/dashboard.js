@@ -131,6 +131,16 @@ function setupEventListeners() {
         e.preventDefault();
         addAccount();
     });
+    
+    // Event listener para tecla ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeCreateBotModal();
+            closeConfirmModal();
+            closeAccountsModal();
+            closeAddAccountModal();
+        }
+    });
 }
 
 // Modal Functions
