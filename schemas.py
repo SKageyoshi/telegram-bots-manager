@@ -21,6 +21,11 @@ class BotBase(BaseModel):
     bot_type: BotType = Field(..., description="Tipo do bot")
     token: str = Field(..., min_length=10, description="Token do bot do Telegram")
     config: Optional[Dict[str, Any]] = Field(default={}, description="Configurações específicas do bot")
+    
+    # Campos de autenticação Telegram
+    api_id: Optional[str] = Field(None, description="API ID do Telegram")
+    api_hash: Optional[str] = Field(None, description="API Hash do Telegram")
+    phone_number: Optional[str] = Field(None, description="Número de telefone")
 
 class BotCreate(BotBase):
     pass
@@ -32,6 +37,11 @@ class BotUpdate(BaseModel):
     token: Optional[str] = Field(None, min_length=10)
     status: Optional[BotStatus] = None
     config: Optional[Dict[str, Any]] = None
+    api_id: Optional[str] = None
+    api_hash: Optional[str] = None
+    phone_number: Optional[str] = None
+    is_authenticated: Optional[bool] = None
+    auth_status: Optional[str] = None
 
 class BotResponse(BotBase):
     id: int
@@ -40,6 +50,8 @@ class BotResponse(BotBase):
     updated_at: Optional[datetime] = None
     total_messages: int = 0
     last_activity: Optional[datetime] = None
+    is_authenticated: bool = False
+    auth_status: str = "pending"
     
     class Config:
         from_attributes = True

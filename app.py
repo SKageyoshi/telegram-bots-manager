@@ -8,8 +8,9 @@ import uvicorn
 
 # Importar módulos locais
 from database import get_db, init_database
-from models import Bot, BotLog, BotStats
+from models import Bot, BotLog, BotStats, TelegramSession
 from schemas import BotCreate, BotUpdate, BotResponse, BotList, BotStats as BotStatsSchema
+from telegram_service import get_telegram_service
 
 app = FastAPI(title="Telegram Bots Manager", version="1.2.0")
 
@@ -62,14 +63,17 @@ def create_bot(bot: BotCreate, db: Session = Depends(get_db)):
         else:
             raise HTTPException(status_code=400, detail="Já existe um bot com este token")
     
-    # Criar novo bot
-    db_bot = Bot(
-        name=bot.name,
-        description=bot.description,
-        bot_type=bot.bot_type,
-        token=bot.token,
-        config=bot.config or {}
-    )
+        # Criar novo bot
+        db_bot = Bot(
+            name=bot.name,
+            description=bot.description,
+            bot_type=bot.bot_type,
+            token=bot.token,
+            config=bot.config or {},
+            api_id=bot.api_id,
+            api_hash=bot.api_hash,
+            phone_number=bot.phone_number
+        )
     
     db.add(db_bot)
     db.commit()
@@ -144,6 +148,66 @@ def stop_bot(bot_id: int, db: Session = Depends(get_db)):
     db.commit()
     
     return {"message": f"Bot {bot.name} parado com sucesso"}
+
+# NOVAS APIs DE AUTENTICAÇÃO TELEGRAM
+
+@app.post("/api/bots/{bot_id}/send-code")
+async def send_telegram_code(bot_id: int, phone_number: str, db: Session = Depends(get_db)):
+    """Enviar código SMS para autenticação"""
+    bot = db.query(Bot).filter(Bot.id == bot_id).first()
+    if not bot:
+        raise HTTPException(status_code=404, detail="Bot não encontrado")
+    
+    if not bot.api_id or not bot.api_hash:
+        raise HTTPException(status_code=400, detail="API ID e API Hash são necessários")
+    
+    try:
+        telegram_service = get_telegram_service()
+        result = await telegram_service.send_code(bot, phone_number)
+        
+        if result["success"]:
+            bot.phone_number = phone_number
+            bot.auth_status = "code_sent"
+            db.commit()
+        
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao enviar código: {str(e)}")
+
+@app.post("/api/bots/{bot_id}/authenticate")
+async def authenticate_bot(bot_id: int, code: str, password: str = None, db: Session = Depends(get_db)):
+    """Autenticar bot com código SMS e senha 2FA"""
+    bot = db.query(Bot).filter(Bot.id == bot_id).first()
+    if not bot:
+        raise HTTPException(status_code=404, detail="Bot não encontrado")
+    
+    if not bot.phone_number:
+        raise HTTPException(status_code=400, detail="Número de telefone não configurado")
+    
+    try:
+        telegram_service = get_telegram_service()
+        result = await telegram_service.authenticate_bot(bot, bot.phone_number, code, password)
+        
+        if result["success"]:
+            db.commit()
+        
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro na autenticação: {str(e)}")
+
+@app.get("/api/bots/{bot_id}/test-connection")
+async def test_bot_connection(bot_id: int, db: Session = Depends(get_db)):
+    """Testar conexão do bot"""
+    bot = db.query(Bot).filter(Bot.id == bot_id).first()
+    if not bot:
+        raise HTTPException(status_code=404, detail="Bot não encontrado")
+    
+    try:
+        telegram_service = get_telegram_service()
+        result = await telegram_service.test_connection(bot)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao testar conexão: {str(e)}")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

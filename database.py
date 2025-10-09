@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Base
+from models import Base, Bot, BotLog, BotStats, TelegramSession
 import os
 
 # Configuração do banco de dados

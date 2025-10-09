@@ -24,6 +24,14 @@ class Bot(Base):
     total_messages = Column(Integer, default=0)
     last_activity = Column(DateTime(timezone=True), nullable=True)
     
+    # Campos de autenticação Telegram
+    api_id = Column(String(50), nullable=True)
+    api_hash = Column(String(200), nullable=True)
+    phone_number = Column(String(20), nullable=True)
+    session_string = Column(Text, nullable=True)  # Sessão serializada
+    is_authenticated = Column(Boolean, default=False)
+    auth_status = Column(String(20), default="pending")  # pending, authenticated, error
+    
     def __repr__(self):
         return f"<Bot(name='{self.name}', type='{self.bot_type}', status='{self.status}')>"
 
@@ -35,7 +43,7 @@ class BotLog(Base):
     level = Column(String(20), nullable=False)  # info, warning, error, debug
     message = Column(Text, nullable=False)
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
-    metadata = Column(JSON, default={})
+    log_data = Column(JSON, default={})  # Renomeado de 'metadata' para 'log_data'
     
     def __repr__(self):
         return f"<BotLog(bot_id={self.bot_id}, level='{self.level}', message='{self.message[:50]}...')>"
@@ -52,3 +60,17 @@ class BotStats(Base):
     
     def __repr__(self):
         return f"<BotStats(bot_id={self.bot_id}, messages={self.messages_processed}, errors={self.errors_count})>"
+
+class TelegramSession(Base):
+    __tablename__ = "telegram_sessions"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    bot_id = Column(Integer, nullable=False)
+    phone_number = Column(String(20), nullable=False)
+    session_data = Column(Text, nullable=False)  # Dados da sessão Telethon
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    last_used = Column(DateTime(timezone=True), nullable=True)
+    is_active = Column(Boolean, default=True)
+    
+    def __repr__(self):
+        return f"<TelegramSession(bot_id={self.bot_id}, phone='{self.phone_number}')>"

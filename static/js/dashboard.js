@@ -153,6 +153,9 @@ async function createBot() {
         description: formData.get('description'),
         bot_type: formData.get('bot_type'),
         token: formData.get('token'),
+        api_id: formData.get('api_id'),
+        api_hash: formData.get('api_hash'),
+        phone_number: formData.get('phone_number'),
         config: {}
     };
     
